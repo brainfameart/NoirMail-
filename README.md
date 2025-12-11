@@ -1,4 +1,6 @@
 # NoirMail
+Created by Ethan Anyam
+on 05 December2025
 
 **NoirMail** — cinematic disposable mail using Mail.tm API
 
