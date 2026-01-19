@@ -9,6 +9,9 @@ let messages = [];
 let pollingInterval = null;
 let selectedMessageId = null;
 
+// ⭐ Ad Tracking Set: Stores IDs of messages that have already triggered an ad
+const adTriggeredMessages = new Set();
+
 // DOM Elements
 const domainList = document.getElementById('domainList');
 const generateBtn = document.getElementById('generateBtn');
@@ -216,6 +219,7 @@ function clearSession() {
     session = null;
     messages = [];
     selectedMessageId = null;
+    adTriggeredMessages.clear(); // Clear the ad history for the session
     
     emailBox.style.display = 'none';
     inboxSection.style.display = 'none';
@@ -328,6 +332,14 @@ function renderInbox() {
 
 // View a specific message
 async function viewMessage(messageId) {
+    // ⭐ ADSTERRA TRIGGER: Check if ad has already been shown for this specific message
+    if (!adTriggeredMessages.has(messageId)) {
+        // If not, trigger the ad script
+        triggerAdsterraAd();
+        // Mark this message as having triggered the ad
+        adTriggeredMessages.add(messageId);
+    }
+
     if (!session || !session.token) return;
     
     selectedMessageId = messageId;
@@ -373,10 +385,29 @@ async function viewMessage(messageId) {
     }
 }
 
+// Helper: Inject Adsterra Script Dynamically
+function triggerAdsterraAd() {
+    const script = document.createElement('script');
+    script.src = "//pl28248414.effectivegatecpm.com/ac/01/63/ac01632a3b4a4dcc5d36035a140becd6.js";
+    script.type = "text/javascript";
+    document.body.appendChild(script);
+}
+
+// Helper function to turn text links into clickable HTML links (for text-only emails)
+function linkify(text) {
+    const safeText = escapeHtml(text);
+    const urlRegex = /(https:\/\/[^\s]+)/g;
+    return safeText.replace(urlRegex, function(url) {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    });
+}
+
 // Render message details
 function renderMessageDetails(message) {
-    const content = message.text || message.html || 'No content';
+    // Check if we have HTML content
+    const hasHtml = message.html && message.html.length > 0;
     
+    // Build the frame
     messageViewer.innerHTML = `
         <div class="message-details">
             <div class="message-meta">
@@ -399,11 +430,35 @@ function renderMessageDetails(message) {
                     </span>
                 </div>
             </div>
-            <div class="message-content">
-                ${escapeHtml(content)}
-            </div>
+            <div class="message-content" id="msg-content-render"></div>
         </div>
     `;
+
+    const contentContainer = document.getElementById('msg-content-render');
+
+    if (hasHtml) {
+        // Render HTML directly
+        contentContainer.innerHTML = message.html;
+
+        // Post-process: Make all links open in new tab
+        const links = contentContainer.querySelectorAll('a');
+        links.forEach(link => {
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
+        });
+        
+        // Styling adjustment for html content images
+        const images = contentContainer.querySelectorAll('img');
+        images.forEach(img => {
+            img.style.maxWidth = '100%';
+            img.style.height = 'auto';
+        });
+
+    } else {
+        // Fallback to text with linkify
+        const content = message.text || 'No content';
+        contentContainer.innerHTML = linkify(content);
+    }
 }
 
 // Close message viewer (mobile)
@@ -484,3 +539,6 @@ function showToast(message, type = 'info') {
         toast.classList.remove('show');
     }, 3000);
 }
+
+
+
