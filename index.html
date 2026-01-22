@@ -34,7 +34,6 @@
 
     <!-- ⭐ Sitemap -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
-
     <!-- ⭐ Structured Data (JSON-LD) -->
     <script type="application/ld+json">
     {
@@ -826,6 +825,9 @@
             }
         }
     </style>
+    
+    <!-- External Script from Original Header -->
+    <script type="text/javascript" src="https://pl28248414.effectivegatecpm.com/ac/01/63/ac01632a3b4a4dcc5d36035a140becd6.js"></script>
 </head>
 
 <body>
@@ -1256,6 +1258,11 @@
                     if (newMessages.length > messages.length) {
                         // Flash the inbox to indicate new messages
                         flashInbox();
+
+                        // Play sound if user is on another tab
+                        if (document.visibilityState === 'hidden') {
+                             playNotificationSound();
+                        }
                     }
                     
                     messages = newMessages;
@@ -1269,6 +1276,27 @@
                     refreshBtn.classList.remove('spinning');
                 }
             }
+        }
+
+        // Simple notification sound (Base64 Ding)
+        function playNotificationSound() {
+            // Base64 encoded short "ding" sound
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+            oscillator.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.5); // Drop to A4
+            
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.5);
         }
 
         // Render inbox messages
