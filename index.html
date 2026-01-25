@@ -36,6 +36,8 @@
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
     <!-- ⭐ Structured Data (JSON-LD) -->
     <script type="application/ld+json">
+
+
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
@@ -825,9 +827,6 @@
             }
         }
     </style>
-    
-    <!-- External Script from Original Header -->
-    <script type="text/javascript" src="https://pl28248414.effectivegatecpm.com/ac/01/63/ac01632a3b4a4dcc5d36035a140becd6.js"></script>
 </head>
 
 <body>
@@ -951,39 +950,6 @@
 
     <!-- Toast container -->
     <div id="toast" class="toast"></div>
-    
-    <!-- Secondary Footer (Preserved from source) -->
-    <footer class="footer">
-        <p>Powered by Mail.tm API • Emails expire after 1 hour of inactivity</p>
-    </footer>
-
-    <!-- ⭐ ADSTERIA AD BLOCK INSIDE VISIBLE LAYOUT -->
-    <div style="width:160px; height:300px; margin: 20px auto;">
-        <script type="text/javascript">
-          atOptions = {
-          	'key' : '6ef2d099fba47167a287892422482dae',
-          	'format' : 'iframe',
-          	'height' : 50,
-          	'width' : 320,
-          	'params' : {}
-          };
-        </script>
-        <script type="text/javascript" src="https://www.highperformanceformat.com/6ef2d099fba47167a287892422482dae/invoke.js"></script>
-    </div>
-
-    <!-- Second Ad Block -->
-    <div style="width:160px; height:300px; margin: 20px auto;">
-        <script type="text/javascript">
-          atOptions = {
-          	'key' : '52bd810ebc8fd887f71e9d6919ab5dfb',
-          	'format' : 'iframe',
-          	'height' : 300,
-          	'width' : 160,
-          	'params' : {}
-          };
-        </script>
-        <script type="text/javascript" src="https://www.highperformanceformat.com/52bd810ebc8fd887f71e9d6919ab5dfb/invoke.js"></script>
-    </div>
 
     <!-- Main Logic Script -->
     <script>
@@ -997,9 +963,6 @@
         let messages = [];
         let pollingInterval = null;
         let selectedMessageId = null;
-        
-        // ⭐ Ad Tracking Set: Stores IDs of messages that have already triggered an ad
-        const adTriggeredMessages = new Set();
 
         // DOM Elements
         const domainList = document.getElementById('domainList');
@@ -1208,7 +1171,6 @@
             session = null;
             messages = [];
             selectedMessageId = null;
-            adTriggeredMessages.clear(); // Clear the ad history for the session
             
             emailBox.style.display = 'none';
             inboxSection.style.display = 'none';
@@ -1347,14 +1309,6 @@
 
         // View a specific message
         async function viewMessage(messageId) {
-            // ⭐ ADSTERRA TRIGGER: Check if ad has already been shown for this specific message
-            if (!adTriggeredMessages.has(messageId)) {
-                // If not, trigger the ad script
-                triggerAdsterraAd();
-                // Mark this message as having triggered the ad
-                adTriggeredMessages.add(messageId);
-            }
-
             if (!session || !session.token) return;
             
             selectedMessageId = messageId;
@@ -1398,14 +1352,6 @@
                     </div>
                 `;
             }
-        }
-
-        // Helper: Inject Adsterra Script Dynamically
-        function triggerAdsterraAd() {
-            const script = document.createElement('script');
-            script.src = "//pl28248414.effectivegatecpm.com/ac/01/63/ac01632a3b4a4dcc5d36035a140becd6.js";
-            script.type = "text/javascript";
-            document.body.appendChild(script);
         }
 
         // Helper function to turn text links into clickable HTML links (for text-only emails)
